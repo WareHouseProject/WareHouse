@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<title>WareHouse MainGame</title>
+</head>
+<body>
+
+  <script src="enchantjs/enchant.min.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script>
+  $(document).ready(function(){
+  	enchant();							// initialize
+
+		var MAX_ROW = 8;//縦のマス数
+		var MAX_COL = 10;//横のマス数
+		var CELL_SIZE = 96;//1マスの大きさ
+		var MAP_IMG = "image/image.png";
+
+  	var game = new Core(960, 768);		// game stage
+  	game.preload('image/Board.png');		// preload image
+		game.preload('image/Player.png');
+		game.preload('image/image.png');
+		game.preload('image/Square.png');
+  	game.fps = 20;
+
+      game.onload = function(){
+
+  		var scene = new Scene();
+			var map = new Map(96,96);//フィールド描画
+			//ステージデータ
+			var fieldmap = [[1,1,1,1,1,1,1,1,1,1],
+											[1,0,0,0,0,4,0,0,0,1],
+											[1,0,0,0,0,0,0,0,0,1],
+											[1,0,0,0,0,0,0,0,0,1],
+											[1,0,0,2,0,0,0,0,0,1],
+											[1,0,0,1,0,0,0,0,0,1],
+											[1,0,0,1,0,0,3,0,0,1],
+											[1,1,1,1,1,1,1,1,1,1],
+		];
+
+		var board = new Board();
+
+			//mapにキャラクター画像を読み込ませる
+			map.image = game.assets[MAP_IMG];
+			//mapにフィールドを読み込ませる
+			map.loadData(fieldmap);
+
+			scene.addChild(board);
+			scene.addChild(map);
+
+  		//Sprite準備
+
+
+			var move = new Move();
+			scene.addChild(move);
+
+  		//毎フレーム毎の処理
+  		scene.addEventListener('enterframe', function(e) {
+  			if (game.input.up    === true) player.walk("w");
+  			if (game.input.left  === true) player.walk("a");
+  			if (game.input.down  === true) player.walk("s");
+  			if (game.input.right === true) player.walk("d");
+  		});
+
+  		//シーンを反映
+          game.pushScene(scene);
+        };
+
+      game.start(); // start your game!
+
+			var Move = enchant.Class.create({		//Spriteクラスを継承
+					/** コンストラクター */
+					initialize: function() {
+						var game = enchant.Game.instance;
+						Sprite.call(this, 960, 768);					//Spriteのサイズ定義
+						this.image = game.assets['image/Square.png'];		//Spriteに画像をセット
+					}
+
+					move: function(){
+						var step = 96;
+						var x = 0;
+						var y = 0;
+
+						//移動
+						switch(key){
+							case 'w': y++ ; break;
+							case 'a': x--; break;
+							case 's': y--; break;
+							case 'd': x++; break;
+						}
+
+					}
+			});
+
+          var Board = enchant.Class.create(Sprite, {		//Spriteクラスを継承
+        			/** コンストラクター */
+        			initialize: function() {
+        				var game = enchant.Game.instance;
+        				Sprite.call(this, 960, 768);					//Spriteのサイズ定義
+        				this.image = game.assets['image/Square.png'];		//Spriteに画像をセット
+        			}
+        	});
+
+					var Player = enchant.Class.create(Sprite, {		//Spriteクラスを継承
+							/** コンストラクター */
+							initialize: function() {
+								var game = enchant.Game.instance;
+								Sprite.call(this, 96, 96);					//Spriteのサイズ定義
+								this.image = game.assets['image/Player.png'];		//Spriteに画像をセット
+							}
+
+							/** 移動処理メソッド */
+							, walk: function(key){
+								var step = 96;
+
+								//移動
+								switch(key){
+									case 'w': this.y -= step; break;
+									case 'a': this.x -= step; break;
+									case 's': this.y += step; break;
+									case 'd': this.x += step; break;
+								}
+
+								//SE再生
+								//game.assets['sound/se_foot_short.mp3'].play();
+							}
+					});
+
+          });
+  </script>
+</body>
+</html>
