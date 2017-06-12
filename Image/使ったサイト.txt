@@ -2,3 +2,5 @@ MoveBox			ぴぽや：http://blog.pipoya.net/blog-entry-2.html
 Square.png 		ぴぽや
 Ornament		ぴぽや
 Goal.png		ぴぽや
+title.png		Frame illust http://frame-illust.com/
+Result.png		ピクト缶　　 http://pictkan.com/photo/town/facility/%E5%80%89%E5%BA%AB-amazon/mK3/640/426
