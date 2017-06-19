@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<title>WareHouse MainGame</title>
+</head>
+<body>
+
+  <script src="enchantjs/enchant.min.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script>
+  $(document).ready(function(){
+  	enchant();							// initialize 
+    var game = new Core(960, 768);
+    game.preload('Image/Result.png');
+    game.fps = 20;
+    game.onload = function(){
+        
+        var scene = new Scene();
+
+        var bg =new Sprite(960,540);
+        bg.image = game.assets['Image/Result.png'];
+        scene.addChild(bg);
+
+        var text = new Label('ランキング');
+        text.font = "42px Palatino";
+        text.moveTo( 100, 30 );
+        scene.addChild(text);
+        game.pushScene(scene);
+    }
+     game.start();
+  });
+  </script>
+</body>
+</html>
