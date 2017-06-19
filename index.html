@@ -26,6 +26,7 @@
 		//game.preload('Image/Player.png');
 		game.preload('Image/image.png');
 		game.preload('Image/Square.png');
+		game.preload('Image/c_52b/c_52b0.png');
   	game.fps = 20;
 
     game.onload = function(){
@@ -68,9 +69,9 @@
   	//毎フレーム毎の処理
   	scene.addEventListener('enterframe', function(e) {
   			if (game.input.up    === true) player.walk("w");
-  			else if (game.input.left  === true) player.walk("a");
-  			else if (game.input.down  === true) player.walk("s");
-  			else if (game.input.right === true) player.walk("d");
+  			if (game.input.left  === true) player.walk("a");
+  			if (game.input.down  === true) player.walk("s");
+  			if (game.input.right === true) player.walk("d");
 				else keyPush = false;
   		});
 
@@ -88,7 +89,7 @@
 								Sprite.call(this, 96, 96);					//Spriteのサイズ定義
 								this.x = x;
 								this.y = y;
-								this.image = game.assets['Image/Square.png'];		//Spriteに画像をセット
+								this.image = game.assets['Image/c_52b/c_52b0.png'];		//Spriteに画像をセット
 							}
 
 							/** 移動処理メソッド */
@@ -96,8 +97,6 @@
 								if(keyPush) return;
 								var step = 96;
 								keyPush = true;
-
-								if(hit(key)) return;
 
 								//移動
 								switch(key){
