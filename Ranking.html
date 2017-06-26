@@ -13,6 +13,8 @@
     //後でPOSTに変える
     var score = 52;
     var g_Ranking = "";
+    var g_RankingText = [];
+    var g_index = 0;
 
     var action = function(){
           //ここにajax処理
@@ -27,14 +29,36 @@
         });
     }
 
+    function RankDraw(scene)
+    {
+        var ranks = g_Ranking.split(",");
+        for (i = 0; i < ranks.length -1 ; i++)
+        {
+              var txt = (i+1) +"位:"+ranks[i]+"手";
+              g_RankingText[i] = new Label(txt);
+              g_RankingText[i].font = "42px Palatino";
+              //スコアは後で正規の変数に変える
+              if(ranks[i] == score) g_RankingText[i].color = '#ff0000';
+              else g_RankingText[i].color = '#ffffff';
+              g_RankingText[i].moveTo( 580, 100 + (50 * i) );
+
+              window.setTimeout(function() {scene.addChild(
+                g_RankingText[g_index]);
+                g_index++;
+              },2500 + (500 * i));
+        }
+    }
+
   $(document).ready(function(){
     action();
   	enchant();							// initialize 
     var game = new Core(960, 768);
     game.preload('Image/Result_BG.png');
     game.fps = 20;
-    game.onload = function(){
-        
+
+    var GameMain =function()
+      {
+
         var scene = new Scene();
 
         var bg =new Sprite(960,768);
@@ -51,30 +75,51 @@
         playerscore.font = "128px Palatino";
         playerscore.color = '#ff0000';
         playerscore.moveTo( 80, 240 );
-        scene.addChild(playerscore);
+        window.setTimeout(function() {scene.addChild(playerscore);},1000);
 
         var clearscore = new Label('でクリアした');
         clearscore.font = "42px Palatino";
         clearscore.color = '#ffffff';
         clearscore.moveTo( 240, 500 );
-        scene.addChild(clearscore);
+        window.setTimeout(function() {scene.addChild(clearscore);},2000);
 
-        var ranks = g_Ranking.split(",");
-        console.log(g_Ranking);
-        for (i = 0; i < ranks.length -1 ; i++)
+        RankDraw(scene);
+
         {
-              var txt = (i+1) +"位:"+ranks[i]+"手";
-              var ranktext = new Label(txt);
-              ranktext.font = "42px Palatino";
-              //スコアは後で正規の変数に変える
-              if(ranks[i] == score) ranktext.color = '#ff0000';
-              else ranktext.color = '#ffffff';
-              ranktext.moveTo( 580, 100 + (60 * i) );
-              scene.addChild(ranktext);
+          var text = new Label('EnterキーかSpaceキーでタイトルへ');
+          text.font = "42px Palatino";
+          text.color = '#ffffff';
+          text.moveTo( 140, 650 );
+          text.width = 768;
+          window.setTimeout(function() {scene.addChild(text);},7500);
         }
 
-        
+        //////////
+        //キー設定
+        //////////
+        game.keybind(32, 'a'); //space -> 32
+        game.keybind(10, 'b'); //enter -> 10
+
+        //キーの押された時の挙動
+        game.addEventListener('abuttondown', function () { gotopage(); });
+        game.addEventListener('bbuttondown', function () { gotopage(); });
+
+        function gotopage() { window.location = 'title.html'; }
+
         game.pushScene(scene);
+      }
+
+    game.onload = function(){
+
+      if(g_Ranking.length != 0)
+      {
+        GameMain();
+      }
+      else
+      {
+        window.setTimeout(game.onload,50);
+        action();
+      }
     }
      game.start();
   });

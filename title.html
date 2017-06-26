@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>WareHouse Title</title>
+</head>
+<body>
+
+    <script src="enchantjs/enchant.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script>
+        enchant();
+
+        //画面のサイズ
+        var screen_width  = 960;
+        var screen_height = 768;
+
+        var game = new Core(screen_width, screen_height);
+        game.fps = 20;
+
+
+
+        //////////
+        //キー設定
+        //////////
+        game.keybind(32, 'a'); //space -> 32
+        game.keybind(10, 'b'); //enter -> 10
+
+        //キーの押された時の挙動
+        game.addEventListener('abuttondown', function () { gotopage(); });
+        game.addEventListener('bbuttondown', function () { gotopage(); });
+
+        function gotopage() { window.location = 'index.html'; }
+
+
+
+        //////////
+        //ロード時
+        //////////
+
+        //アセットロード
+        var titleBackImage = 'Image/Title_BG.png';
+        var titleLogoImage = 'Image/Title_Text.png';
+
+        game.preload(titleBackImage);
+        game.preload(titleLogoImage);
+
+        game.onload = function ()
+        {
+            createBackImage();
+            createLogoSprite();
+            createTitleMessage();
+        }
+        game.start();
+
+
+
+        ////////////////
+        //以下生成用の関数
+        ////////////////
+
+        function createBackImage()
+        {
+            var back = new Sprite(screen_width, screen_height);
+            back.image = game.assets[titleBackImage];
+            game.rootScene.addChild(back);
+        }
+
+        function createLogoSprite()
+        {
+            var width  = 783;
+            var height = 115;
+
+            var logo = new Sprite(width, height);
+
+            logo.image = game.assets[titleLogoImage];
+            logo.x     = screen_width / 2 - width / 2;
+            logo.y     = 100;
+
+            //上下に反復移動
+            logo.tl.moveBy(0,  100, 30) //時間はフレーム数で指定
+                   .moveBy(0, -100, 30)
+                   .loop();
+
+            game.rootScene.addChild(logo);
+        }
+
+        function createTitleMessage()
+        {
+            var width = 1500;
+
+
+            var str = new Label();
+
+            str.text      = 'EnterキーかSpaceキーを押してください';
+            str.textAlign = "center";
+            str.font      = "48px Palatino";
+            str.x         = screen_width / 2 - width / 2;
+            str.y         = 500;
+            str.width     = width;
+
+            //フェードイン/フェードアウトを反復
+            str.tl.fadeIn (10) //時間はフレーム数で指定
+                  .fadeOut(10)
+                  .loop();
+
+            game.rootScene.addChild(str);
+        }
+    </script>
+</body>
+</html>
