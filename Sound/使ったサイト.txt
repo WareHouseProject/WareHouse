@@ -3,4 +3,5 @@ title.mp3			8-bitH–[
 wall_collide.wav	8-bitH–[
 Result_BGM.mp3		8-bitH–[
 Result_SE.mp3		8-bitH–[
+Decision.mp3		8-bitH–[
 push_box.wav		–‚‰¤° : http://maoudamashii.jokersounds.com/
