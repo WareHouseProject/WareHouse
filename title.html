@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>WareHouse Title</title>
+</head>
+<body>
+
+    <script src="enchantjs/enchant.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script>
+        enchant();
+        var titleBackImage = 'Image/Title_BG.png';
+        var titleLogoImage = 'Image/Title_Text.png';
+        var game = new Core(960, 768);
+        game.preload(titleBackImage);
+        game.preload(titleLogoImage);
+        game.fps = 20;
+
+        game.keybind(32, 'a'); //space
+        game.keybind(10, 'b'); //enter
+
+        game.onload = function ()
+        {
+            var back = new Sprite(960, 768);
+            back.image = game.assets[titleBackImage];
+            game.rootScene.addChild(back);
+
+            var logo = new Sprite(783, 115);
+            logo.image = game.assets[titleLogoImage];
+            logo.x = 480 - 391.5;
+            logo.y = 100;
+            logo.tl.moveBy(0, 100, 30)
+                .moveBy(0, -100, 30)
+                .loop();
+            game.rootScene.addChild(logo);
+
+            var str = new Label();
+            str.text = 'EnterキーかSpaceキーを押してください';
+            str.x = 480 - 750;
+            str.y = 500;
+            str.font = "48px Palatino";
+            str.width = 1500;
+            str.textAlign = "center";
+            str.tl.fadeIn(10)
+                .fadeOut(10)
+                .loop();
+            game.rootScene.addChild(str);
+        }
+
+        game.addEventListener('abuttondown', function () { gotopage(); });
+        game.addEventListener('bbuttondown', function () { gotopage(); });
+
+        function gotopage()
+        {
+            window.location = 'index.html';
+        }
+
+        game.start();
+
+    </script>
+</body>
+</html>
