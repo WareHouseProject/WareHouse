@@ -29,7 +29,7 @@
         });
     }
 
-    function RankDraw(scene)
+    function RankDraw(scene,game)
     {
         var ranks = g_Ranking.split(",");
         for (i = 0; i < ranks.length -1 ; i++)
@@ -42,8 +42,9 @@
               else g_RankingText[i].color = '#ffffff';
               g_RankingText[i].moveTo( 580, 100 + (50 * i) );
 
-              window.setTimeout(function() {scene.addChild(
-                g_RankingText[g_index]);
+              window.setTimeout(function() {
+                scene.addChild(g_RankingText[g_index]);
+                game.assets['Sound/Result_SE.mp3'].play();
                 g_index++;
               },2500 + (500 * i));
         }
@@ -54,10 +55,16 @@
   	enchant();							// initialize 
     var game = new Core(960, 768);
     game.preload('Image/Result_BG.png');
+    //音楽系
+    game.preload('Sound/Result_BGM.mp3');
+		game.preload('Sound/Result_SE.mp3');
     game.fps = 20;
 
     var GameMain =function()
       {
+        var bgm = game.assets['Sound/Result_BGM.mp3'];
+		    bgm.play();
+		    bgm.src.loop = true;
 
         var scene = new Scene();
 
@@ -75,15 +82,21 @@
         playerscore.font = "128px Palatino";
         playerscore.color = '#ff0000';
         playerscore.moveTo( 80, 240 );
-        window.setTimeout(function() {scene.addChild(playerscore);},1000);
+        window.setTimeout(function() {
+          scene.addChild(playerscore);
+          game.assets['Sound/Result_SE.mp3'].play();
+          },1000);
 
         var clearscore = new Label('でクリアした');
         clearscore.font = "42px Palatino";
         clearscore.color = '#ffffff';
         clearscore.moveTo( 240, 500 );
-        window.setTimeout(function() {scene.addChild(clearscore);},2000);
+        window.setTimeout(
+          function() {scene.addChild(clearscore);
+          game.assets['Sound/Result_SE.mp3'].play();
+          },2000);
 
-        RankDraw(scene);
+        RankDraw(scene,game);
 
         {
           var text = new Label('EnterキーかSpaceキーでタイトルへ');
@@ -91,7 +104,10 @@
           text.color = '#ffffff';
           text.moveTo( 140, 650 );
           text.width = 768;
-          window.setTimeout(function() {scene.addChild(text);},7500);
+          window.setTimeout(function() {
+            scene.addChild(text);
+            game.assets['Sound/Result_SE.mp3'].play();
+            },7500);
         }
 
         //////////
