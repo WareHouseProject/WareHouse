@@ -30,16 +30,25 @@
 
 		var keyPush = false;//キーのトリガー機能用
 
-  	var game = new Core(960, 768);		// game stage
+  	var game = new Core(960, 768);
+		//画像リソース
 		game.preload('Image/image.png');
 		game.preload('Image/Square.png');
 		game.preload('Image/c_52b/c_52b0.png');
 		game.preload('Image/MoveBox.png');
+		//音楽リソース
+		game.preload('Sound/main_game.mp3');
+		game.preload('Sound/push_box.wav');
+		game.preload('Sound/wall_collide.wav');
   	game.fps = 20;
 
     game.onload = function(){
 
   	var scene = new Scene();
+
+		var bgm = game.assets['Sound/main_game.mp3'];
+		bgm.play();
+		bgm.loop = true;
 
 		//背景表示
 		var bg = new Sprite(960,768);
@@ -49,8 +58,8 @@
 		var map = new Map(CELL_SIZE,CELL_SIZE);//フィールド描画
 		//ステージデータ
 		var fieldmap = [[1,1,1,1,1,1,1,1,1,1],
-										[1,0,0,0,0,5,0,0,0,1],
-										[1,0,3,0,0,0,0,0,0,1],
+										[1,0,0,0,0,5,0,1,0,1],
+										[1,0,3,0,0,0,0,1,0,1],
 										[1,0,0,0,0,0,0,2,0,1],
 										[1,0,0,2,0,0,0,0,0,1],
 										[1,0,0,1,0,0,0,0,0,1],
@@ -85,6 +94,9 @@
 
   	//毎フレーム毎の処理
   	scene.addEventListener('enterframe', function(e) {
+
+			bgm.play();
+			bgm.loop = true;
 
 			if(goal_count <= 0) return;//全てのゴールが埋まっていたらクリア
 
@@ -121,8 +133,8 @@
 								if(keyPush) return;
 								var step = CELL_SIZE;
 								keyPush = true;
-
-
+								game.assets['Sound/push_box.wav'].stop();
+								game.assets['Sound/wall_collide.wav'].stop();
 								this.hit(key, fieldmap);
 
 								if(wall_hit) return;
@@ -134,8 +146,7 @@
 									case 'd': this.x += step; break;
 								}
 								move_count++;
-								//SE再生
-								//game.assets['sound/se_foot_short.mp3'].play();
+
 							}
 							//当たり判定
 							, hit: function (direction, fieldmap){
@@ -168,12 +179,16 @@
 												//マップデータの書き換え
 												fieldmap[(this.y / CELL_SIZE) + row_num*2][(this.x / CELL_SIZE) + col_num*2] = MAPDATA_NUM.BOX;
 												fieldmap[(this.y / CELL_SIZE) + row_num][(this.x / CELL_SIZE) + col_num] = MAPDATA_NUM.NONE;
+												//SE再生
+												game.assets['Sound/push_box.wav'].play();
 										}
 										//移動不可オブジェクトとの判定
 										if(mv2 == MAPDATA_NUM.WALL
 										|| mv2 == MAPDATA_NUM.GOALBOX
 										|| mv2 == MAPDATA_NUM.BOX){
 												wall_hit = true;
+												//SE再生
+												game.assets['Sound/wall_collide.wav'].play();
 										}
 
 										//ゴールとの判定
@@ -188,6 +203,8 @@
 										if(mv1 == MAPDATA_NUM.WALL
 										|| mv1 == MAPDATA_NUM.GOALBOX){
 												wall_hit = true;
+												//SE再生
+												game.assets['Sound/wall_collide.wav'].play();
 											}
 							}
 					});
