@@ -1,5 +1,5 @@
 MoveBox			ぴぽや：http://blog.pipoya.net/blog-entry-2.html 
-Square.png 		ぴぽや
+Square.png 		フリーテクスチャ素材館 : http://free-texture.net/stone-metal/checker-plate-bk.html
 Ornament		ぴぽや
 Goal.png		ぴぽや
 title.png		Frame illust http://frame-illust.com/
