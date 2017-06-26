@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<title>WareHouse MainGame</title>
+</head>
+<body>
+
+  <script src="enchantjs/enchant.min.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script>
+
+    //後でPOSTに変える
+    var score = 52;
+    var g_Ranking = "";
+
+    var action = function(){
+          //ここにajax処理
+        $.ajax({
+          type: "POST",
+          url: "Ranking.php",
+          async: true, 
+          data:{ "score":score},
+          success: function(j_data){
+             g_Ranking = j_data;
+            }
+        });
+    }
+
+  $(document).ready(function(){
+    action();
+  	enchant();							// initialize 
+    var game = new Core(960, 768);
+    game.preload('Image/Result_BG.png');
+    game.fps = 20;
+    game.onload = function(){
+        
+        var scene = new Scene();
+
+        var bg =new Sprite(960,768);
+        bg.image = game.assets['Image/Result_BG.png'];
+        scene.addChild(bg);
+
+        var text = new Label('ランキング');
+        text.font = "42px Palatino";
+        text.color = '#ffffff';
+        text.moveTo( 380, 40 );
+        scene.addChild(text);
+
+        var playerscore = new Label(score+"手");
+        playerscore.font = "128px Palatino";
+        playerscore.color = '#ff0000';
+        playerscore.moveTo( 80, 240 );
+        scene.addChild(playerscore);
+
+        var clearscore = new Label('でクリアした');
+        clearscore.font = "42px Palatino";
+        clearscore.color = '#ffffff';
+        clearscore.moveTo( 240, 500 );
+        scene.addChild(clearscore);
+
+        var ranks = g_Ranking.split(",");
+        console.log(g_Ranking);
+        for (i = 0; i < ranks.length -1 ; i++)
+        {
+              var txt = (i+1) +"位:"+ranks[i]+"手";
+              var ranktext = new Label(txt);
+              ranktext.font = "42px Palatino";
+              //スコアは後で正規の変数に変える
+              if(ranks[i] == score) ranktext.color = '#ff0000';
+              else ranktext.color = '#ffffff';
+              ranktext.moveTo( 580, 100 + (60 * i) );
+              scene.addChild(ranktext);
+        }
+
+        
+        game.pushScene(scene);
+    }
+     game.start();
+  });
+  </script>
+</body>
+</html>
