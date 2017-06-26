@@ -32,7 +32,6 @@
     function RankDraw(scene)
     {
         var ranks = g_Ranking.split(",");
-        console.log(g_Ranking);
         for (i = 0; i < ranks.length -1 ; i++)
         {
               var txt = (i+1) +"位:"+ranks[i]+"手";
@@ -56,8 +55,10 @@
     var game = new Core(960, 768);
     game.preload('Image/Result_BG.png');
     game.fps = 20;
-    game.onload = function(){
-        
+
+    var GameMain =function()
+      {
+
         var scene = new Scene();
 
         var bg =new Sprite(960,768);
@@ -93,8 +94,32 @@
           window.setTimeout(function() {scene.addChild(text);},7500);
         }
 
-        
+        //////////
+        //キー設定
+        //////////
+        game.keybind(32, 'a'); //space -> 32
+        game.keybind(10, 'b'); //enter -> 10
+
+        //キーの押された時の挙動
+        game.addEventListener('abuttondown', function () { gotopage(); });
+        game.addEventListener('bbuttondown', function () { gotopage(); });
+
+        function gotopage() { window.location = 'title.html'; }
+
         game.pushScene(scene);
+      }
+
+    game.onload = function(){
+
+      if(g_Ranking.length != 0)
+      {
+        GameMain();
+      }
+      else
+      {
+        window.setTimeout(game.onload,50);
+        action();
+      }
     }
      game.start();
   });
