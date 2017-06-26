@@ -24,7 +24,7 @@
         //キー設定
         //////////
         game.keybind(32, 'a'); //space -> 32
-        game.keybind(10, 'b'); //enter -> 10
+        game.keybind(13, 'b'); //enter -> 13
 
         //キーの押された時の挙動
         game.addEventListener('abuttondown', function () { gotopage(); });
@@ -41,12 +41,17 @@
         //アセットロード
         var titleBackImage = 'Image/Title_BG.png';
         var titleLogoImage = 'Image/Title_Text.png';
+        var titleMusic     = 'Sound/title.mp3';
 
         game.preload(titleBackImage);
         game.preload(titleLogoImage);
+        game.preload(titleMusic);
 
         game.onload = function ()
         {
+            game.assets[titleMusic].play();
+            game.assets[titleMusic].src.loop = true;
+
             createBackImage();
             createLogoSprite();
             createTitleMessage();
