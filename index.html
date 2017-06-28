@@ -16,7 +16,7 @@
 		var MAX_COL = 10;//横のマス数
 		var CELL_SIZE = 96;//1マスの大きさ
 		var MAP_IMG = "Image/image.png";
-		var BG_IMG = "Image/Square.png";
+		var BG_IMG = "Image/Tile.png";
 		var Player_X = 0;//プレイヤー初期位置
 		var Player_Y = 0;
 		var MoveBox_X = 0;//移動箱の初期位置
@@ -24,22 +24,25 @@
 
 		var wall_hit = false;//壁に当たっているか
 
-		var goal_count = 0;//ゴールの数
-
 		var move_count = 0;//移動手数保存用
+
+		var goal_count = 0;
 
 		var keyPush = false;//キーのトリガー機能用
 
   	var game = new Core(960, 768);
 		//画像リソース
 		game.preload('Image/image.png');
-		game.preload('Image/Square.png');
+		game.preload('Image/Tile.png');
 		game.preload('Image/c_52b/c_52b0.png');
 		game.preload('Image/MoveBox.png');
+		game.preload('Image/Goal.png');
 		//音楽リソース
 		game.preload('Sound/main_game.mp3');
 		game.preload('Sound/push_box.wav');
 		game.preload('Sound/wall_collide.wav');
+		game.preload('Sound/heal01.mp3');
+		game.preload('Sound/hit01.mp3');
   	game.fps = 20;
 
     game.onload = function(){
@@ -47,8 +50,6 @@
   	var scene = new Scene();
 
 		var bgm = game.assets['Sound/main_game.mp3'];
-		bgm.play();
-		bgm.loop = true;
 
 		//背景表示
 		var bg = new Sprite(960,768);
@@ -58,7 +59,7 @@
 		var map = new Map(CELL_SIZE,CELL_SIZE);//フィールド描画
 		//ステージデータ
 		var fieldmap = [[1,1,1,1,1,1,1,1,1,1],
-										[1,0,0,0,0,5,0,1,0,1],
+										[1,0,0,0,0,4,0,1,0,1],
 										[1,0,3,0,0,0,0,1,0,1],
 										[1,0,0,0,0,0,0,2,0,1],
 										[1,0,0,2,0,0,0,0,0,1],
@@ -67,13 +68,7 @@
 										[1,1,1,1,1,1,1,1,1,1],
 		];
 
-		//mapにキャラクター画像を読み込ませる
-		map.image = game.assets[MAP_IMG];
-		//mapにフィールドを読み込ませる
-		map.loadData(fieldmap);
-
-		scene.addChild(map);
-
+		var goal = [];
 		//マップデータ番号を探して位置を保存
 		for (var i = 0; i < MAX_COL; i++) {
 			for (var j = 0; j < MAX_ROW; j++) {
@@ -82,25 +77,45 @@
 						Player_Y = j * CELL_SIZE;
 						fieldmap[j][i] = MAPDATA_NUM.NONE;
 					}
-						if(fieldmap[j][i] == MAPDATA_NUM.GOAL){
-								goal_count++;
-						}
+					if(fieldmap[j][i] == MAPDATA_NUM.GOAL){
+						goal[goal_count] = new Goal(i * CELL_SIZE,j * CELL_SIZE);
+						scene.addChild(goal[goal_count]);
+						fieldmap[j][i] = MAPDATA_NUM.NONE;
+						goal_count++;
+					}
 				}
 			}
+
+			//mapにキャラクター画像を読み込ませる
+			map.image = game.assets[MAP_IMG];
+			//mapにフィールドを読み込ませる
+			map.loadData(fieldmap);
+
+			scene.addChild(map);
 
 		//プレイヤー準備
 		var player = new Player(Player_X,Player_Y);
 		scene.addChild(player);
 
+
+
   	//毎フレーム毎の処理
   	scene.addEventListener('enterframe', function(e) {
 
-			bgm.play();
-			bgm.loop = true;
-
-			if(goal_count <= 0) return;//全てのゴールが埋まっていたらクリア
-
 				map.loadData(fieldmap);
+
+				bgm.play();
+
+				var count = 0;
+
+				for(var i = 0; i < goal_count; i++){
+
+					count += goal[i].hit(fieldmap,count);
+
+					if(count == goal_count){
+						window.location = 'Ranking.html';
+					}
+				}
 
 				if (game.input.up === true) player.walk("w", fieldmap);
 				else if (game.input.left  === true) player.walk("a", fieldmap);
@@ -133,8 +148,6 @@
 								if(keyPush) return;
 								var step = CELL_SIZE;
 								keyPush = true;
-								game.assets['Sound/push_box.wav'].stop();
-								game.assets['Sound/wall_collide.wav'].stop();
 								this.hit(key, fieldmap);
 
 								if(wall_hit) return;
@@ -184,39 +197,54 @@
 										}
 										//移動不可オブジェクトとの判定
 										if(mv2 == MAPDATA_NUM.WALL
-										|| mv2 == MAPDATA_NUM.GOALBOX
 										|| mv2 == MAPDATA_NUM.BOX){
 												wall_hit = true;
 												//SE再生
 												game.assets['Sound/wall_collide.wav'].play();
 										}
 
-										//ゴールとの判定
-										if(mv2 == MAPDATA_NUM.GOAL){
-												goal_count--;
-												fieldmap[(this.y / CELL_SIZE) + row_num*2][(this.x / CELL_SIZE) + col_num*2] = MAPDATA_NUM.GOALBOX;
-												fieldmap[(this.y / CELL_SIZE) + row_num][(this.x / CELL_SIZE) + col_num] = MAPDATA_NUM.NONE;
-											}
 										}
 
 										//動かない壁との判定
-										if(mv1 == MAPDATA_NUM.WALL
-										|| mv1 == MAPDATA_NUM.GOALBOX){
+										if(mv1 == MAPDATA_NUM.WALL){
 												wall_hit = true;
 												//SE再生
 												game.assets['Sound/wall_collide.wav'].play();
 											}
 							}
 					});
+
+					var Goal = enchant.Class.create(Sprite, {		//Spriteクラスを継承
+							/** コンストラクター */
+							initialize: function(x,y) {
+								var game = enchant.Game.instance;
+								Sprite.call(this, CELL_SIZE, CELL_SIZE);					//Spriteのサイズ定義
+								this.x = x;
+								this.y = y;
+								this.image = game.assets['Image/Goal.png'];		//Spriteに画像をセット
+							}
+
+							, hit: function(fieldmap, count){
+								var mv1 = fieldmap[(this.y / CELL_SIZE)][(this.x / CELL_SIZE)];
+								var result;
+								if(mv1 == MAPDATA_NUM.BOX){
+									result = 1;
+								}
+								else{
+									result = 0;
+								}
+								return result;
+							}
+						});
+
           });
 
 					var MAPDATA_NUM = {
-						NONE   : 0,
-						WALL   : 1,
-						BOX    : 2,
-						GOAL   : 3,
-						GOALBOX: 4,
-						PLAYER : 5,
+						NONE   : 0,//スペース
+						WALL   : 1,//かべ
+						BOX    : 2,//押せる箱
+						GOAL   : 3,//ゴール
+						PLAYER : 4,//プレイヤー
 
 					};
 
