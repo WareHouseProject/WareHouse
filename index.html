@@ -48,6 +48,8 @@
   	var scene = new Scene();
 
 		var bgm = game.assets['Sound/main_game.mp3'];
+		bgm.play();
+		bgm.src.loop =true;
 
 		//背景表示
 		var bg = new Sprite(960,768);
@@ -56,14 +58,14 @@
 
 		var map = new Map(CELL_SIZE,CELL_SIZE);//フィールド描画
 		//ステージデータ
-		var fieldmap = [[1,1,1,1,1,1,1,1,1,1],
-										[1,0,0,0,0,4,0,1,0,1],
-										[1,0,3,0,0,0,0,1,0,1],
-										[1,0,0,0,0,0,0,2,0,1],
-										[1,0,0,2,0,0,0,0,0,1],
-										[1,0,0,1,0,0,0,0,0,1],
-										[1,0,0,1,0,0,3,0,0,1],
-										[1,1,1,1,1,1,1,1,1,1],
+		var fieldmap = [[0,1,1,1,1,1,1,1,0,0],
+						[0,1,3,3,3,3,0,1,0,0],
+						[1,1,1,3,3,3,2,1,1,1],
+						[1,0,0,2,1,2,0,2,0,1],
+						[1,0,2,2,0,0,1,2,0,1],
+						[1,0,0,0,0,1,0,0,0,1],
+						[1,1,1,1,0,4,0,1,1,1],
+						[0,0,0,1,1,1,1,1,0,0],
 		];
 
 		var goal = [];
@@ -101,9 +103,6 @@
   	scene.addEventListener('enterframe', function(e) {
 
 				map.loadData(fieldmap);
-
-				bgm.play();
-
 				var count = 0;
 
 				for(var i = 0; i < goal_count; i++){
@@ -111,7 +110,7 @@
 					count += goal[i].hit(fieldmap,count);
 
 					if(count == goal_count){
-						window.location = 'Ranking.html';
+						window.location.href = "Ranking.html?" + escape(move_count);
 					}
 				}
 

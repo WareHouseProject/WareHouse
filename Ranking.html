@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<title>WareHouse MainGame</title>
 </head>
+<?PHP echo $_POST["text"]; ?>
 <body>
 
   <script src="enchantjs/enchant.min.js"></script>
@@ -11,7 +12,8 @@
   <script>
 
     //後でPOSTに変える
-    var score = 52;
+    var score = location.search.substring(1, location.search.length);
+    console.log(score);
     var g_Ranking = "";
     var g_RankingText = [];
     var g_index = 0;
